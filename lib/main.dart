@@ -1,13 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:lokasiwow_mobile/widgets/city_card.dart';
-import 'package:lokasiwow_mobile/models/city.dart';
+import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(MaterialApp(home: Home()));
+class CustomCardType {
+  String title;
+  String imageURL;
+  String locationURL;
+  String paragraph;
+
+  CustomCardType(this.title, this.imageURL, this.locationURL, this.paragraph);
 }
 
-class Home extends StatelessWidget {
+void main() {
+  runApp(MaterialApp(
+    home: Home(),
+    debugShowCheckedModeBanner: false,
+  ));
+}
+
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _WidgetOptions = <Widget>[
+    MainScreen(),
+    // LocationList(),
+    // CategoryList(),
+    // BlogList(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (Scaffold(
+      body: Container(
+        child: _WidgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_city),
+            label: 'Location',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Category',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.article),
+            label: 'Blog',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+      ),
+    ));
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,105 +87,16 @@ class Home extends StatelessWidget {
         body: ListView(
           children: <Widget>[
             Container(
-              child: Container(
-                height: 150,
-                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    SizedBox(
-                      width: 24,
-                    ),
-                    CityCard(
-                      City(
-                        id: 1,
-                        name: 'Jakarta',
-                        imageUrl: 'assets/city1.png',
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CityCard(
-                      City(
-                        id: 2,
-                        name: 'Bandung',
-                        imageUrl: 'assets/city2.png',
-                        isPopular: true,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CityCard(
-                      City(id: 3, imageUrl: 'assets/city3.png', name: 'Space'),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CityCard(
-                      City(
-                        id: 4,
-                        name: 'Palembang',
-                        imageUrl: 'assets/city4.png',
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CityCard(
-                      City(
-                        id: 5,
-                        name: 'Aceh',
-                        imageUrl: 'assets/city5.png',
-                        isPopular: true,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CityCard(
-                      City(
-                        id: 6,
-                        name: 'Bogor',
-                        imageUrl: 'assets/city6.png',
-                      ),
-                    ),
-                    SizedBox(
-                      width: 24,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Container(
                 child: Column(
               children: List.generate(
                   8,
-                  (index) => Card(
-                        child: Column(
-                          children: [
-                            Image.asset('assets/placeholder.png'),
-                            ListTile(
-                              title: Text('Card title $index'),
-                              subtitle: Text(
-                                'Secondary Text',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailScreen()))
-                                    },
-                                child: Text("Pelajari Lebih lanjut"))
-                          ],
-                        ),
-                      )),
+                  (index) => CustomCard(
+                          card: CustomCardType(
+                        "$index",
+                        "assets/placeholder.png",
+                        "hi",
+                        "hi",
+                      ))),
             )),
           ],
         )));
@@ -143,186 +122,132 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-class LocationList extends StatelessWidget {
-  const LocationList({Key? key}) : super(key: key);
+// class LocationList extends StatelessWidget {
+//   const LocationList({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return (Scaffold(
+//         appBar: AppBar(
+//           title: Text("LokasiWow - Locations"),
+//           centerTitle: true,
+//         ),
+//         body: ListView(
+//           children: <Widget>[
+//             Container(
+//                 child: Column(
+//               children: List.generate(8, (index) => CustomCard(
+//                 CustomCardType(
+//                   title: index.toString(),
+//                   imageURL: "assets/placeholder.png",
+//                   locationURL: "Location",
+//                   paragraph: "Lorem Ipsum dolor smith aresto minatour gamino restaumi kostrinka ngisang sldkfaleidf aldjeiod sksdjsdokoj",
+
+//                 )
+//               )),
+//             )),
+//           ],
+//         )));
+//   }
+// }
+
+// class CategoryList extends StatelessWidget {
+//   const CategoryList({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return (Scaffold(
+//         appBar: AppBar(
+//           title: Text("LokasiWow - Category"),
+//           centerTitle: true,
+//         ),
+//         body: ListView(
+//           children: <Widget>[
+//             Container(
+//                 child: Column(
+//               children: List.generate(8, (index) => CustomCard(
+//                 CustomCardType(
+//                   title: index.toString(),
+//                   imageURL: "assets/placeholder.png",
+//                   locationURL: "Location",
+//                   paragraph: "Lorem Ipsum dolor smith aresto minatour gamino restaumi kostrinka ngisang sldkfaleidf aldjeiod sksdjsdokoj",
+
+//                 )
+//               )),
+//             )),
+//           ],
+//         )));
+//   }
+// }
+
+// class BlogList extends StatelessWidget {
+//   const BlogList({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return (Scaffold(
+//         appBar: AppBar(
+//           title: Text("LokasiWow - Blog"),
+//           centerTitle: true,
+//         ),
+//         body: ListView(
+//           children: <Widget>[
+//             Container(
+//                 child: Column(
+//               children: List.generate(8, (index) => CustomCard(
+//                 CustomCardType(
+//                   title: index.toString(),
+//                   imageURL: "assets/placeholder.png",
+//                   locationURL: "Location",
+//                   paragraph: "Lorem Ipsum dolor smith aresto minatour gamino restaumi kostrinka ngisang sldkfaleidf aldjeiod sksdjsdokoj",
+
+//                 )
+//               )),
+//             )),
+//           ],
+//         )));
+//   }
+// }
+
+class CustomCard extends StatelessWidget {
+  const CustomCard({super.key, required this.card});
+  final CustomCardType card;
 
   @override
   Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-          title: Text("LokasiWow - Home"),
-          centerTitle: true,
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-                child: Column(
-              children: List.generate(
-                  8,
-                  (index) => Card(
-                        child: Column(
-                          children: [
-                            Image.asset('assets/placeholder.png'),
-                            ListTile(
-                              title: Text('Card title $index'),
-                              subtitle: Text(
-                                'Secondary Text',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailScreen()))
-                                    },
-                                child: Text("Pelajari Lebih lanjut"))
-                          ],
-                        ),
-                      )),
-            )),
+    return (Container(
+      width: 300,
+      child: Card(
+        child: Column(
+          children: [
+            Image.asset(card.imageURL),
+            ListTile(
+              title: Text(card.title),
+            ),
+            ButtonBar(
+              alignment: MainAxisAlignment.start,
+              children: [
+                TextButton(
+                    onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailScreen()))
+                        },
+                    child: Text("Pelajari Lebih lanjut")),
+                TextButton(
+                    onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailScreen()))
+                        },
+                    child: Text("Peta"))
+              ],
+            )
           ],
-        )));
-  }
-}
-
-class PostList extends StatelessWidget {
-  const PostList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-          title: Text("LokasiWow - Home"),
-          centerTitle: true,
         ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-                child: Column(
-              children: List.generate(
-                  8,
-                  (index) => Card(
-                        child: Column(
-                          children: [
-                            Image.asset('assets/placeholder.png'),
-                            ListTile(
-                              title: Text('Card title $index'),
-                              subtitle: Text(
-                                'Secondary Text',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailScreen()))
-                                    },
-                                child: Text("Pelajari Lebih lanjut"))
-                          ],
-                        ),
-                      )),
-            )),
-          ],
-        )));
-  }
-}
-
-class CategoryList extends StatelessWidget {
-  const CategoryList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-          title: Text("LokasiWow - Home"),
-          centerTitle: true,
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-                child: Column(
-              children: List.generate(
-                  8,
-                  (index) => Card(
-                        child: Column(
-                          children: [
-                            Image.asset('assets/placeholder.png'),
-                            ListTile(
-                              title: Text('Card title $index'),
-                              subtitle: Text(
-                                'Secondary Text',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailScreen()))
-                                    },
-                                child: Text("Pelajari Lebih lanjut"))
-                          ],
-                        ),
-                      )),
-            )),
-          ],
-        )));
-  }
-}
-
-class BlogList extends StatelessWidget {
-  const BlogList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-          title: Text("LokasiWow - Home"),
-          centerTitle: true,
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-                child: Column(
-              children: List.generate(
-                  8,
-                  (index) => Card(
-                        child: Column(
-                          children: [
-                            Image.asset('assets/placeholder.png'),
-                            ListTile(
-                              title: Text('Card title $index'),
-                              subtitle: Text(
-                                'Secondary Text',
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailScreen()))
-                                    },
-                                child: Text("Pelajari Lebih lanjut"))
-                          ],
-                        ),
-                      )),
-            )),
-          ],
-        )));
+      ),
+    ));
   }
 }
